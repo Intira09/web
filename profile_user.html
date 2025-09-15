@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Account Setting</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background-color: #f5f5f5;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #4c65af;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: bold;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+    }
+
+    /* Layout */
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 40px 60px;
+    }
+
+    .form-box {
+      background-color: #ddd;
+      padding: 30px;
+      width: 60%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-box h2 {
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .form-row label {
+      width: 120px;
+      font-weight: bold;
+    }
+
+    .form-row input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .edit-icon {
+      width: 20px;
+      height: 20px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    .profile {
+      background: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      /* กำหนดความกว้างกล่อง */
+      margin: 0 auto;
+      /* จัดให้อยู่กลางแนวนอน */
+      border-radius: 10px;
+      /* มุมโค้งเล็กน้อย */
+    }
+
+    .profile img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin-bottom: 20px;
+    }
+
+    .update-btn {
+      display: block;
+      margin: 20px auto 0;
+      /* ปุ่มกลาง */
+      background-color: #3c4db2;
+      color: white;
+      border: none;
+      padding: 10px 30px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .update-btn:hover {
+      background-color: #2f3ea2;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="navbar-left">
+      <a href="homepage_user.html">HOME PAGE</a>
+      <a href="check_exam.html">ตรวจข้อสอบ</a>
+      <a href="profile_user.html">จัดการผู้ใช้งาน</a>
+      <a href="contect_admin.html">ติดต่อแอดมิน</a>
+      <a href="login.html">ออกจากระบบ</a>
+    </div>
+    <div class="navbar-right">
+      <div class="user-info">
+        <div>
+          <strong>mr.ja</strong><br>
+          <small>ja127</small>
+        </div>
+        <img src="https://via.placeholder.com/40" alt="User">
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="container">
+    <!-- Form -->
+    <div class="form-box">
+      <h2>Account Setting</h2>
+
+      <div class="form-row">
+        <label>Status</label>
+        <input type="text" id="status" readonly>
+      </div>
+
+      <div class="form-row">
+        <label>FULLNAME</label>
+        <input type="text" id="fullname">
+        <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" class="edit-icon" alt="edit">
+      </div>
+
+      <div class="form-row">
+        <label>USERNAME</label>
+        <input type="text" id="username">
+        <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" class="edit-icon" alt="edit">
+      </div>
+
+      <div class="form-row">
+        <label>New Password</label>
+        <input type="password" id="new-password" placeholder="XXXXXXXXX">
+        <img src="https://cdn-icons-png.flaticon.com/512/1827/1827933.png" class="edit-icon" alt="edit">
+      </div>
+
+      <!-- profile box -->
+      <div class="profile">
+        <h3>User Profile</h3>
+        <img id="profile-img" src="https://via.placeholder.com/120" alt="Profile Picture">
+        <input type="file" id="upload-img" accept="image/*" style="margin-top:10px;">
+      </div>
+
+      <button id="update-btn" class="update-btn">Update</button>
+    </div>
+  </div>
+
+  <script>
+    // โหลดข้อมูลเริ่มต้น
+    document.addEventListener("DOMContentLoaded", () => {
+      const currentUser = localStorage.getItem("username");  // ✅ เอาจาก localStorage
+      if (!currentUser) {
+        alert("กรุณาเข้าสู่ระบบใหม่");
+        window.location.href = "login.html";
+        return;
+      }
+
+      fetch(`http://127.0.0.1:8000/api/userinfo?username=${currentUser}`)
+        .then(res => res.json())
+        .then(user => {
+          document.querySelector(".user-info strong").textContent = user.fullname;
+          document.querySelector(".user-info small").textContent = user.username;
+          document.querySelector(".user-info img").src = user.profile_img;
+
+          document.getElementById("status").value = user.role;  // ✅ ใช้ role
+          document.getElementById("fullname").value = user.fullname;
+          document.getElementById("username").value = user.username;
+          document.getElementById("profile-img").src = user.profile_img;
+        })
+        .catch(err => console.error("Error loading user data:", err));
+    });
+
+    document.getElementById("update-btn").addEventListener("click", async () => {
+      const fullname = document.getElementById("fullname").value;
+      const newUsername = document.getElementById("username").value;   // ✅ username ใหม่ (จาก input)
+      const oldUsername = localStorage.getItem("username");            // ✅ username เดิม
+      const password = document.getElementById("new-password").value;
+      const file = document.getElementById("upload-img").files[0];
+
+      const formData = new FormData();
+      formData.append("username", oldUsername);   // username เดิม
+      if (newUsername && newUsername !== oldUsername) {
+        formData.append("new_username", newUsername);   // ส่ง username ใหม่ไป backend
+      }
+      if (fullname) formData.append("fullname", fullname);
+      if (password) formData.append("password", password);
+      if (file) formData.append("profile_img", file);
+
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/update_user", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await res.json();
+        alert(result.message || "อัปเดตสำเร็จ!");
+
+        // ถ้ามีการเปลี่ยน username → อัปเดต localStorage ด้วย
+        if (result.new_username) {
+          localStorage.setItem("username", result.new_username);
+        }
+
+        location.reload(); // รีเฟรชเพื่อให้โชว์ข้อมูลใหม่
+      } catch (err) {
+        console.error("Update error:", err);
+        alert("เกิดข้อผิดพลาดในการอัปเดต");
+      }
+    });
+
+  </script>
+
+</body>
+
+</html>

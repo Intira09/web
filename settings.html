@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตั้งค่าระบบ</title>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      margin: 0;
+      background: #f0f2f5;
+    }
+
+    .wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: #333;
+      color: white;
+      padding: 20px;
+      position: fixed;
+      height: 100%;
+      top: 0;
+      left: 0;
+      transition: 0.3s ease;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #444;
+      border-radius: 5px;
+    }
+
+    .sidebar a:hover {
+      background: #555;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 240px;
+      flex: 1;
+      padding: 20px;
+    }
+
+    .navbar {
+      background-color: #3b5bdb;
+      color: white;
+      padding: 15px 30px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 8px 8px 0 0;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      background: #ddd;
+      overflow-x: auto;
+      border-bottom: 1px solid #bbb;
+    }
+
+    .tab {
+      padding: 14px 20px;
+      cursor: pointer;
+      flex-shrink: 0;
+      background: #ccc;
+      border-right: 1px solid #bbb;
+      transition: 0.3s;
+    }
+
+    .tab:hover {
+      background: #bbb;
+    }
+
+    .tab.active {
+      background: white;
+      font-weight: bold;
+      border-bottom: 3px solid #3b5bdb;
+    }
+
+    .tab-content {
+      padding: 20px;
+      display: none;
+      background: white;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Form */
+    form label {
+      display: block;
+      margin: 15px 0 5px;
+    }
+
+    input {
+      width: 300px;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #3b5bdb;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #2f44a1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .wrapper {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        position: relative;
+        height: auto;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .tabs {
+        display: block;
+      }
+
+      .tab {
+        display: inline-block;
+        margin: 5px 0;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <h2>เมนู</h2>
+    <a href="homepage_admin.html">HOME PAGE</a>
+    <a href="manage_user.html">จัดการผู้ใช้งาน</a>
+    <a href="create_answer.html">เพิ่มคำตอบนักเรียน</a>
+    <a href="show_answer.html">ตรวจสอบคำตอบนักเรียน</a>    
+    <a href="view_feedback.html">ตรวจสอบความคิดเห็นของผู้ใช้งาน</a>
+    <a href="settings.html">ตั้งค่าระบบ</a>
+    <a href="login.html">ออกจากระบบ</a>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- แสดงชื่อเว็บไซต์ที่ตั้งไว้ -->
+    <div class="navbar" id="site-title-display">ระบบตรวจข้อสอบอัตนัยด้วย AI</div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" data-tab="site-settings" onclick="openTab(this)">ตั้งค่าเว็บไซต์</div>
+    </div>
+
+    <!-- Tab Content -->
+    <div id="site-settings" class="tab-content active">
+      <h2>ตั้งค่าเว็บไซต์</h2>
+      <form onsubmit="saveSiteTitle(event)">
+        <label>ชื่อเว็บไซต์</label>
+        <input type="text" name="site_title" value="ระบบตรวจข้อสอบอัตนัยด้วย AI">
+        <button type="submit">บันทึกการตั้งค่า</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+function openTab(tabElement) {
+  const tabId = tabElement.dataset.tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+  tabElement.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function saveSiteTitle(event) {
+  event.preventDefault();
+  const title = document.querySelector('input[name="site_title"]').value;
+  localStorage.setItem('site_title', title);
+  document.getElementById('site-title-display').textContent = title;
+  alert('บันทึกชื่อเว็บไซต์เรียบร้อย');
+}
+
+// โหลดชื่อเว็บที่เคยบันทึกไว้เมื่อเปิดหน้า
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTitle = localStorage.getItem('site_title');
+  if (savedTitle) {
+    document.querySelector('input[name="site_title"]').value = savedTitle;
+    document.getElementById('site-title-display').textContent = savedTitle;
+  }
+});
+</script>
+
+</body>
+</html>
