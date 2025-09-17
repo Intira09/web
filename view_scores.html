@@ -5,37 +5,58 @@
 <title>ผลการตรวจคำตอบ</title>
 <style>
 body { font-family: sans-serif; margin: 0; background: #f5f5f5; }
-.navbar {
-  background-color: #4c65af;
-  color: white;
-  padding: 10px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.navbar a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
-.navbar a:hover { text-decoration: underline; }
-.user-info { display: flex; align-items: center; gap: 10px; }
-.user-info img { width: 40px; height: 40px; border-radius: 50%; }
+    .navbar {
+      position: sticky; /* ติดด้านบน */
+      top: 0;
+      background-color: #4c65af; /* สีเดียว */
+      padding: 12px 30px;
+      display: flex;
+      justify-content: center; /* <- เปลี่ยนจาก flex-start เป็น center */
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      z-index: 999;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-right: 20px;
+      font-weight: 500;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .navbar a:hover {
+      background-color: rgba(255,255,255,0.2);
+      color: #ffeb3b;
+    }
+
+    .navbar-left {
+      display: flex;
+      gap: 15px; /* เพิ่มช่องว่างระหว่างลิงก์ */
+    }
+
+    /* ซ่อน scrollbar แบบสวย */
+    .navbar-left::-webkit-scrollbar {
+      display: none;
+    }
 .container { max-width: 1000px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; }
 h2 { margin-top: 0; }
 .filters { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
 select, button { padding: 5px 10px; }
 table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
 th { background-color: #e0e0e0; }
-.btn-back { padding: 8px 16px; background: #4c65af; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 10px; }
-.btn-back:hover { background: #3a4a8f; }
 .score { font-weight: bold; color: green; }
 .status { font-weight: bold; }
 .status.checked { color: green; }
 .status.unchecked { color: red; }
-pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
+pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; }
 </style>
 </head>
 <body>
 
-<!-- Navbar -->
 <div class="navbar">
   <div class="navbar-left">
     <a href="homepage_user.html">HOME PAGE</a>
@@ -45,14 +66,11 @@ pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
     <a href="contect_admin.html">ติดต่อแอดมิน</a>
     <a href="login.html">ออกจากระบบ</a>
   </div>
-  <div class="navbar-right">
-  </div>
 </div>
 
 <div class="container">
   <h2>ผลการตรวจคำตอบนักเรียน</h2>
 
-  <!-- Filters -->
   <div class="filters">
     <label>ปีการศึกษา:
       <select id="year"><option value="">-- เลือกปีการศึกษา --</option></select>
@@ -66,7 +84,6 @@ pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
     <button onclick="loadStudentData()">ดูผล</button>
   </div>
 
-  <!-- Student Info -->
   <p><strong>รหัสนักเรียน:</strong> <span id="studentId"></span></p>
   <p><strong>ชั้นเรียน:</strong> <span id="groupId"></span></p>
   <p><strong>ปีการศึกษา:</strong> <span id="examYear"></span></p>
@@ -93,8 +110,6 @@ pre { background: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
 </div>
 
 <script>
-function goBack(){ window.location.href="check_exam.html"; }
-
 let allData = [];
 
 // โหลด filters ตอนเปิดหน้า
@@ -104,7 +119,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
     if(!res.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ");
     allData = await res.json();
 
-    // โหลดปี
     const years = [...new Set(allData.map(item=>item.exam_year))];
     const yearSelect = document.getElementById("year");
     years.forEach(y=>{
@@ -112,7 +126,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       yearSelect.appendChild(opt);
     });
 
-    // เมื่อเลือกปี -> โหลดกลุ่ม
     yearSelect.addEventListener("change", ()=>{
       const groups=[...new Set(allData.filter(d=>d.exam_year==yearSelect.value).map(d=>d.group_id))];
       const groupSelect=document.getElementById("group");
@@ -123,7 +136,6 @@ document.addEventListener("DOMContentLoaded", async ()=>{
       });
     });
 
-    // เมื่อเลือกกลุ่ม -> โหลดนักเรียน
     document.getElementById("group").addEventListener("change", ()=>{
       const group=document.getElementById("group").value;
       const students=allData.filter(d=>d.exam_year==yearSelect.value && d.group_id==group);
@@ -157,17 +169,15 @@ function loadStudentData(){
     document.getElementById("essayText").textContent=data.essay_text || "";
     document.getElementById("essayAnalysis").textContent=data.essay_analysis || "";
 
+    // อัปเดตตาราง feedback
     const feedbackTable=document.getElementById("feedbackTable");
     feedbackTable.innerHTML="";
-
     if(data.description){
       for(let key in data.description){
         if(key==="คะแนนรวมทั้งหมด") continue;
         let score="",fb="";
         if(typeof data.description[key]==="object"){
-          if("คะแนนรวมใจความ " in data.description[key]){
-            score=data.description[key]["คะแนนรวมใจความ "];
-          }
+          if("score" in data.description[key]) score=data.description[key].score;
           fb=JSON.stringify(data.description[key],null,2);
         } else {
           score=data.description[key];
@@ -183,6 +193,7 @@ function loadStudentData(){
 </script>
 </body>
 </html>
+
 
 
 
